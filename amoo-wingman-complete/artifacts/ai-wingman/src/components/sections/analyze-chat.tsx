@@ -61,7 +61,7 @@ export function AnalyzeChat() {
     formData.append("image", file);
 
     try {
-      const res = await fetch("/api/analyze", { method: "POST", body: formData });
+      const res = await fetch("https://wingman-api-4c6s.onrender.com/api/analyze", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Analysis failed");
       setResult(data);
