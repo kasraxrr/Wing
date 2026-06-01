@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Router, type IRouter } from "express";
 import multer from "multer";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -36,8 +35,8 @@ Respond ONLY with valid JSON in this exact format:
   ]
 }`;
 
-// Restored the working '-latest' suffix to avoid 404 API errors
-const MODEL_CHAIN = ["gemini-1.5-flash-latest", "gemini-flash-latest"];
+// Models to try in order — confirmed available on this key
+const MODEL_CHAIN = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-flash-lite-latest"];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -59,7 +58,7 @@ function classifyError(message: string): { userError: string; retryable: boolean
   return { userError: "AI analysis failed. Please try again.", retryable: false };
 }
 
-router.post("/analyze", upload.single("image"), async (req: any, res: any) => {
+router.post("/analyze", upload.single("image"), async (req, res) => {
   if (!req.file) {
     res.status(400).json({ error: "No image file uploaded" });
     return;
@@ -82,6 +81,7 @@ router.post("/analyze", upload.single("image"), async (req: any, res: any) => {
 
   let lastError = "";
 
+  // Try each model; on rate-limit, wait and retry the same model once before moving on
   for (const modelName of MODEL_CHAIN) {
     const MAX_ATTEMPTS = 2;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
@@ -89,7 +89,6 @@ router.post("/analyze", upload.single("image"), async (req: any, res: any) => {
         req.log.info({ modelName, attempt, mimeType, size: req.file.size }, "Calling Gemini");
 
         const model = genAI.getGenerativeModel({ model: modelName });
-        
         const result = await model.generateContent(parts);
         const text = result.response.text();
 
@@ -103,9 +102,7 @@ router.post("/analyze", upload.single("image"), async (req: any, res: any) => {
         }
 
         const parsed = JSON.parse(jsonMatch[0]);
-        
-        // Fixed: Bypassed the strict response type enforcement using 'as any'
-        res.json({ ...parsed, _model: modelName } as any);
+        res.json({ ...parsed, _model: modelName });
         return;
 
       } catch (err: unknown) {
@@ -116,14 +113,18 @@ router.post("/analyze", upload.single("image"), async (req: any, res: any) => {
         req.log.warn({ modelName, attempt, err }, "Gemini attempt failed");
 
         if (retryable && attempt < MAX_ATTEMPTS) {
+          // Back off 3 seconds then retry the same model
           await sleep(3000);
           continue;
         }
+
+        // Not retryable, or exhausted attempts for this model — try next model
         break;
       }
     }
   }
 
+  // All models exhausted
   req.log.error({ lastError }, "All Gemini models failed");
   const { userError } = classifyError(lastError);
   const isFinalQuota = lastError.includes("quota") || lastError.includes("429") || lastError.includes("RESOURCE_EXHAUSTED");
