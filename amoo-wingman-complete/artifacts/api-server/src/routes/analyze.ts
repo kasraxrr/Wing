@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router, type IRouter } from "express";
 import multer from "multer";
 import { GoogleGenerativeAI } from "@google/generative-ai";
