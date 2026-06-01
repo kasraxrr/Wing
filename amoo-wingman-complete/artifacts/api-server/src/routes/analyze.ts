@@ -35,9 +35,8 @@ Respond ONLY with valid JSON in this exact format:
   ]
 }`;
 
-// Models to try in order — confirmed available on this key
-
-const MODEL_CHAIN = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-1.5-pro-latest"];
+// ۱۰۰٪ معتبر و به‌روز شده برای تغییرات ساختاری جدید گوگل
+const MODEL_CHAIN = ["gemini-1.5-flash", "gemini-1.5-pro"];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -75,21 +74,25 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
   const mimeType = req.file.mimetype as "image/jpeg" | "image/png" | "image/webp" | "image/gif";
   const genAI = new GoogleGenerativeAI(apiKey);
 
+  // تغییر مهم اول: دستورات سیستم از پارت‌ها حذف شدند تا ساختار تصویر خراب نشود
   const parts = [
-    { text: SYSTEM_INSTRUCTION },
     { inlineData: { data: base64Image, mimeType } },
   ];
 
   let lastError = "";
 
-  // Try each model; on rate-limit, wait and retry the same model once before moving on
   for (const modelName of MODEL_CHAIN) {
     const MAX_ATTEMPTS = 2;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
         req.log.info({ modelName, attempt, mimeType, size: req.file.size }, "Calling Gemini");
 
-        const model = genAI.getGenerativeModel({ model: modelName });
+        // تغییر مهم دوم: فرستادن سیستم اینستراکشن به عنوان آپشن استاندارد ساخت مدل
+        const model = genAI.getGenerativeModel({ 
+          model: modelName,
+          systemInstruction: SYSTEM_INSTRUCTION 
+        });
+        
         const result = await model.generateContent(parts);
         const text = result.response.text();
 
@@ -114,18 +117,14 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
         req.log.warn({ modelName, attempt, err }, "Gemini attempt failed");
 
         if (retryable && attempt < MAX_ATTEMPTS) {
-          // Back off 3 seconds then retry the same model
           await sleep(3000);
           continue;
         }
-
-        // Not retryable, or exhausted attempts for this model — try next model
         break;
       }
     }
   }
 
-  // All models exhausted
   req.log.error({ lastError }, "All Gemini models failed");
   const { userError } = classifyError(lastError);
   const isFinalQuota = lastError.includes("quota") || lastError.includes("429") || lastError.includes("RESOURCE_EXHAUSTED");
