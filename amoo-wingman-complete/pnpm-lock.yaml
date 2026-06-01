@@ -594,8 +594,8 @@ packages:
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
 
-  '@google/generative-ai@0.24.1':
-    resolution: {integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==}
+'@google/generative-ai@0.21.0':
+    resolution: {integrity: sha512-GkFWCIJFNQMFKXkWnlgISWPln1sCEBGNqimGYkGABdnFp+OlhIBbYSqaAk5wDnQrGMOHPBvg9VIlBR0MkJMfA==}
     engines: {node: '>=18.0.0'}
 
   '@hookform/resolvers@3.10.0':
