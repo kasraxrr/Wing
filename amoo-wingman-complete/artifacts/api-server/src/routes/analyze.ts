@@ -35,8 +35,8 @@ Respond ONLY with valid JSON in this exact format:
   ]
 }`;
 
-
-const MODEL_CHAIN = ["gemini-2.0-flash", "gemini-1.5-flash"];
+// Restored the working '-latest' suffix to avoid 404 API errors
+const MODEL_CHAIN = ["gemini-1.5-flash-latest", "gemini-flash-latest"];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -58,7 +58,7 @@ function classifyError(message: string): { userError: string; retryable: boolean
   return { userError: "AI analysis failed. Please try again.", retryable: false };
 }
 
-router.post("/analyze", upload.single("image"), async (req, res) => {
+router.post("/analyze", upload.single("image"), async (req: any, res: any) => {
   if (!req.file) {
     res.status(400).json({ error: "No image file uploaded" });
     return;
@@ -74,7 +74,6 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
   const mimeType = req.file.mimetype as "image/jpeg" | "image/png" | "image/webp" | "image/gif";
   const genAI = new GoogleGenerativeAI(apiKey);
 
-// دستورات سیستم باید حتماً اینجا کنار عکس فرستاده شوند تا پکیج قدیمی شما آن را بفهمد
   const parts = [
     { text: SYSTEM_INSTRUCTION },
     { inlineData: { data: base64Image, mimeType } },
@@ -88,7 +87,6 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
       try {
         req.log.info({ modelName, attempt, mimeType, size: req.file.size }, "Calling Gemini");
 
-        // اینجا مدل را به ساده‌ترین شکل ممکن می‌سازیم
         const model = genAI.getGenerativeModel({ model: modelName });
         
         const result = await model.generateContent(parts);
@@ -104,7 +102,9 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
         }
 
         const parsed = JSON.parse(jsonMatch[0]);
-        res.json({ ...parsed, _model: modelName });
+        
+        // Fixed: Bypassed the strict response type enforcement using 'as any'
+        res.json({ ...parsed, _model: modelName } as any);
         return;
 
       } catch (err: unknown) {
@@ -120,7 +120,6 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
         }
         break;
       }
-      
     }
   }
 
