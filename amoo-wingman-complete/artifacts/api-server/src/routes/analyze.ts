@@ -36,7 +36,7 @@ Respond ONLY with valid JSON in this exact format:
 }`;
 
 
-const MODEL_CHAIN = ["gemini-1.5-flash-latest", "gemini-flash-latest"];
+const MODEL_CHAIN = ["gemini-2.0-flash", "gemini-1.5-flash"];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
