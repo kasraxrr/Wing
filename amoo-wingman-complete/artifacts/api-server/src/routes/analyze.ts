@@ -35,8 +35,8 @@ Respond ONLY with valid JSON in this exact format:
   ]
 }`;
 
-// ۱۰۰٪ معتبر و به‌روز شده برای تغییرات ساختاری جدید گوگل
-const MODEL_CHAIN = ["gemini-1.5-flash", "gemini-1.5-pro"];
+
+const MODEL_CHAIN = ["gemini-1.5-flash-latest", "gemini-flash-latest"];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -74,8 +74,9 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
   const mimeType = req.file.mimetype as "image/jpeg" | "image/png" | "image/webp" | "image/gif";
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // تغییر مهم اول: دستورات سیستم از پارت‌ها حذف شدند تا ساختار تصویر خراب نشود
+// دستورات سیستم باید حتماً اینجا کنار عکس فرستاده شوند تا پکیج قدیمی شما آن را بفهمد
   const parts = [
+    { text: SYSTEM_INSTRUCTION },
     { inlineData: { data: base64Image, mimeType } },
   ];
 
@@ -87,11 +88,8 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
       try {
         req.log.info({ modelName, attempt, mimeType, size: req.file.size }, "Calling Gemini");
 
-        // تغییر مهم دوم: فرستادن سیستم اینستراکشن به عنوان آپشن استاندارد ساخت مدل
-        const model = genAI.getGenerativeModel({ 
-          model: modelName,
-          systemInstruction: SYSTEM_INSTRUCTION 
-        });
+        // اینجا مدل را به ساده‌ترین شکل ممکن می‌سازیم
+        const model = genAI.getGenerativeModel({ model: modelName });
         
         const result = await model.generateContent(parts);
         const text = result.response.text();
@@ -122,6 +120,7 @@ router.post("/analyze", upload.single("image"), async (req, res) => {
         }
         break;
       }
+      
     }
   }
 
