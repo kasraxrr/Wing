@@ -36,7 +36,7 @@ Respond ONLY with valid JSON in this exact format:
 }`;
 
 // Models to try in order — confirmed available on this key
-const MODEL_CHAIN = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-flash-lite-latest"];
+const MODEL_CHAIN = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-1.5-pro"];
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
