@@ -22,6 +22,10 @@ Then, provide 3 creative reply options:
 1) Witty & Playful, 
 2) Genuine & Deep, 
 3) Bold (to move towards a date). 
+Prioritize emotional intelligence and deep conversation.
+Avoid cheesy flirting.
+If the conversation is dead or uninterested,
+say it clearly instead of forcing replies.
 Explain 'why' for each reply.
 
 Respond ONLY with valid JSON in this exact format:
