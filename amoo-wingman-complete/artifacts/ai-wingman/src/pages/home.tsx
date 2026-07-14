@@ -33,7 +33,25 @@ function Footer() {
             </div>
           </div>
           
-
+          <div>
+            <h4 className="font-pixel text-sm mb-4 text-foreground">SYSTEM</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">Download App</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">Documentation</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">API Reference</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">Status: ONLINE</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-pixel text-sm mb-4 text-foreground">LEGAL</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors hover:underline decoration-primary underline-offset-4">Cookie Policy</a></li>
+            </ul>
+          </div>
+        </div>
         
         <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-muted-foreground">
           <p>© 2025 AMOO WINGMAN. ALL RIGHTS RESERVED.</p>
