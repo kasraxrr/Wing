@@ -1,10 +1,7 @@
 import React from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Hero } from "@/components/sections/hero";
-import { Features } from "@/components/sections/features";
-import { Evolution } from "@/components/sections/evolution";
-import { UseCases } from "@/components/sections/use-cases";
-import { Testimonials } from "@/components/sections/testimonials";
+
 import { AnalyzeChat } from "@/components/sections/analyze-chat";
 import { motion } from "framer-motion";
 
@@ -115,10 +112,6 @@ export default function Home() {
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <Features />
-        <UseCases />
-        <Evolution />
-        <Testimonials />
         <AnalyzeChat />
         <CTA />
       </main>
