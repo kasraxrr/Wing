@@ -3,9 +3,6 @@ import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { href: "#features", label: "Features" },
-  { href: "#evolution", label: "Evolution" },
-  { href: "#use-cases", label: "Use Cases" },
   { href: "#analyze", label: "Analyze", highlight: true },
 ];
 
